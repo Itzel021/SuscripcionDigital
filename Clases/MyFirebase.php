@@ -9,7 +9,7 @@ class MyFirebase
     {
         $this->UrlFirebase = "https://{$project}-default-rtdb.firebaseio.com/";
     }
-
+    
     private function runCurl($url, $method, $data = null)
     {
         // Inicializar cURL
@@ -29,7 +29,12 @@ class MyFirebase
 
         return json_decode($response, true); // Decodificar la respuesta JSON
     }
-    
+    public function getAllUsers()
+    {
+        $url = $this->UrlFirebase . "usuarios.json";
+        return $this->runCurl($url, 'GET');
+    }
+
     //Función para registrar usuarios
     public function registerUser($username, $email, $password, $plan, $pago, $numCuenta)
     {
