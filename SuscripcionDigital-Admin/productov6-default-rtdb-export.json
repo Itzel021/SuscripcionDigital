@@ -1,0 +1,131 @@
+{
+  "detalles": {
+    "COM001": {
+      "Autor": "Stan Lee",
+      "Descuento": 0,
+      "Editorial": "Marvel Comics",
+      "Fecha": 1962,
+      "Nombre": "Spider-Man",
+      "Precio": 10
+    },
+    "COM002": {
+      "Autor": "Bob Kane",
+      "Descuento": 20.3,
+      "Editorial": "DC Comics",
+      "Fecha": 1939,
+      "Nombre": "Batman",
+      "Precio": 12.5
+    },
+    "COM003": {
+      "Autor": "Jerry Siegel",
+      "Descuento": 3,
+      "Editorial": "DC Comics",
+      "Fecha": 1938,
+      "Nombre": "Superman",
+      "Precio": 11
+    },
+    "LIB001": {
+      "Autor": "J.R.R. Tolkien",
+      "Descuento": 14.3,
+      "Editorial": "Minotauro",
+      "Fecha": 1954,
+      "Nombre": "El senor de los anillos",
+      "Precio": 20
+    },
+    "LIB002": {
+      "Autor": "Isaac Asimov",
+      "Descuento": 5.09,
+      "Editorial": "Doubleday",
+      "Fecha": 1982,
+      "Nombre": "Los limites de la Fundacion",
+      "Precio": 15.5
+    },
+    "LIB003": {
+      "Autor": "Obie Fernandez",
+      "Descuento": 10.15,
+      "Editorial": "Addison-Wesley",
+      "Fecha": 2007,
+      "Nombre": "The Rails Way",
+      "Precio": 30
+    },
+    "MAN001": {
+      "Autor": "Hajime Isayama",
+      "Descuento": 5,
+      "Editorial": "Kodansha",
+      "Fecha": 2009,
+      "Nombre": "Attack on Titan",
+      "Precio": 9
+    },
+    "MAN002": {
+      "Autor": "Masashi Kishimoto",
+      "Descuento": 5.5,
+      "Editorial": "Shueisha",
+      "Fecha": 1999,
+      "Nombre": "Naruto",
+      "Precio": 9.5
+    },
+    "MAN003": {
+      "Autor": "Kohei Horikoshi",
+      "Descuento": 1,
+      "Editorial": "Shueisha",
+      "Fecha": 2014,
+      "Nombre": "My Hero Academia",
+      "Precio": 8
+    },
+    "MAN005": {
+      "Autor": "Naoko Takeuchi",
+      "Descuento": 15,
+      "Editorial": "Panini Comics",
+      "Fecha": 2024,
+      "Nombre": "Sailor Moon",
+      "Precio": 120
+    },
+    "MAN006": {
+      "Autor": "Yusuke Murata",
+      "Descuento": 10.5,
+      "Editorial": "Norma Editorial",
+      "Fecha": 2024,
+      "Nombre": "One Punch Man",
+      "Precio": 150
+    }
+  },
+  "productos": {
+    "comics": {
+      "COM001": "Spider-Man",
+      "COM002": "Batman",
+      "COM003": "Superman"
+    },
+    "libros": {
+      "LIB001": "El senor de los anillos",
+      "LIB002": "Los limites de la Fundacion",
+      "LIB003": "The Rails Way"
+    },
+    "mangas": {
+      "MAN001": "My Hero Academia",
+      "MAN002": "Naruto",
+      "MAN003": "Attack on Titan",
+      "MAN005": "Sailor Moon",
+      "MAN006": "One Punch Man"
+    }
+  },
+  "respuestas": {
+    "200": "Categoria encontrada exitosamente.",
+    "201": "ISBN encontrado exitosamente.",
+    "202": "Producto registrado correctamente.",
+    "203": "Producto actualizado correctamente.",
+    "204": "Producto borrado correctamente.",
+    "300": "Categoria no encontrada.",
+    "301": "ISBN no encontrado.",
+    "302": "El producto ya existe.",
+    "303": "El JSON está mal formado.",
+    "304": "El ISBN del producto no existe.",
+    "500": "Usuario no reconocido.",
+    "501": "Password no reconcido.",
+    "999": "Error no idetificado"
+  },
+  "usuarios": {
+    "pruebas1": "de88e3e4ab202d87754078cbb2df6063",
+    "pruebas2": "6796ebbb111298d042de1a20a7b9b6eb",
+    "pruebas3": "f7e999012e3700d47e6cb8700ee9cf19"
+  }
+}
