@@ -1,0 +1,35 @@
+//Agregar producto
+{
+  "usuario": "admin",
+  "password": "12345678a",
+  "producto": {
+    "Autor": "Autor Nuevo",
+    "Editorial": "Editorial Nueva",
+    "Fecha": 2025,
+    "Nombre": "Producto Nuevo",
+    "Precio": 50,
+    "Categoria": "manga",
+    "Descuento": 10
+    "URL": "https://drive.go"
+  }
+}
+
+//Actualizar producto
+{
+  "usuario": "admin",
+  "password": "12345678a",
+  "producto": {
+    "Autor": "Autor Actualizado",
+    "Editorial": "Editorial Actualizada",
+    "Fecha": 2026,
+    "Nombre": "Producto Actualizado",
+    "Precio": 60
+    "URL": "https://drive.go"
+  }
+}
+
+//Eliminar producto
+{
+  "usuario": "admi2n",
+  "password": "12345678a"
+}
