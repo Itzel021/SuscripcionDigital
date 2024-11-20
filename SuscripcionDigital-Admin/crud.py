@@ -22,9 +22,8 @@ def agregar_producto():
             "mensaje": obtener_respuesta(501)  # Contraseña no reconocida
         }), 403
 
-    # Verifica que los campos obligatorios del producto estén presentes
     producto = datos.get("producto", {})
-    if not all(k in producto for k in ("Autor", "Editorial", "Fecha", "Nombre", "Precio", "Categoria", "URL")):
+    if not all(k in producto for k in ("Autor", "Editorial", "Fecha", "Nombre", "Precio", "Categoria", "URL", "Portada")):
         return jsonify({
             "codigo": 303,
             "mensaje": obtener_respuesta(303)  # JSON mal formado
@@ -34,25 +33,22 @@ def agregar_producto():
     categoria = producto.get("Categoria", "").lower()  # Asegura que esté en minúsculas
     nuevo_id = generar_nuevo_id(categoria)
 
-    # Si la categoría no es válida, devuelve un error
     if not nuevo_id:
         return jsonify({
             "codigo": 300,
             "mensaje": obtener_respuesta(300)  # Categoría no válida
         }), 400
 
-    # Referencias en Firebase
     ref_detalles = db.reference("detalles")
     ref_productos = db.reference(f"productos/{categoria}s")
 
-    # Verifica si el producto ya existe
     if ref_detalles.child(nuevo_id).get():
         return jsonify({
             "codigo": 302,
             "mensaje": obtener_respuesta(302)  # Producto ya existe
         }), 409
 
-    # Inserta el producto en 'detalles'
+    # Inserta el producto
     ref_detalles.child(nuevo_id).set({
         "Autor": producto["Autor"],
         "Editorial": producto["Editorial"],
@@ -60,10 +56,10 @@ def agregar_producto():
         "Nombre": producto["Nombre"],
         "Precio": producto["Precio"],
         "Descuento": producto.get("Descuento", 0),
-        "URL": producto["URL"]
+        "URL": producto["URL"],
+        "Portada": producto["Portada"].lower()
     })
 
-    # Inserta el producto en la categoría correspondiente
     ref_productos.child(nuevo_id).set(producto["Nombre"])
 
     return jsonify({
@@ -76,7 +72,7 @@ def agregar_producto():
 def actualizar_producto(producto_id):
     datos = request.json
 
-    # Verificar autenticación del administrador
+    # Verificar administrador
     usuario = datos.get("usuario")
     password = datos.get("password")
 
@@ -92,9 +88,22 @@ def actualizar_producto(producto_id):
             "mensaje": obtener_respuesta(501)  # Contraseña no reconocida
         }), 403
 
-    # Verifica que los campos obligatorios del producto estén presentes
+    campos_validos = {"Autor", "Editorial", "Fecha", "Nombre", "Precio", "URL", "Portada", "Descuento"}
+
     datos_actualizados = datos.get("producto", {})
-    if not all(k in datos_actualizados for k in ("Autor", "Editorial", "Fecha", "Nombre", "Precio", "URL")):
+    
+    # Detectar campos desconocidos
+    campos_proporcionados = set(datos_actualizados.keys())
+    campos_desconocidos = campos_proporcionados - campos_validos
+    if campos_desconocidos:
+        return jsonify({
+            "codigo": 306,
+            "mensaje": f"El JSON contiene campos desconocidos: {', '.join(campos_desconocidos)}"
+        }), 400
+
+    datos_filtrados = {k: v for k, v in datos_actualizados.items() if k in campos_validos}
+
+    if not datos_filtrados:
         return jsonify({
             "codigo": 303,
             "mensaje": obtener_respuesta(303)  # JSON mal formado
@@ -113,42 +122,54 @@ def actualizar_producto(producto_id):
             "mensaje": obtener_respuesta(304)  # ID no corresponde a una categoría válida
         }), 400
 
-    # Referencia al producto en "detalles"
     ref_detalles = db.reference(f"detalles/{producto_id}")
     producto_existente = ref_detalles.get()
 
-    if producto_existente:
-        # Actualizar los detalles del producto
-        ref_detalles.update(datos_actualizados)
+    if not producto_existente:
+        return jsonify({
+            "codigo": 301,
+            "mensaje": obtener_respuesta(301)  # Producto no encontrado
+        }), 404
+
+    if "Portada" in datos_filtrados:
+        portada = datos_filtrados["Portada"]
+        if not isinstance(portada, str) or not portada.strip():
+            return jsonify({
+                "codigo": 305,
+                "mensaje": "El campo 'Portada' debe ser una cadena no vacía."
+            }), 400
+        datos_filtrados["Portada"] = portada.lower()
+
+    try:
+        # Actualizar producto
+        ref_detalles.update(datos_filtrados)
         ref_productos = db.reference(f"productos/{categoria}/{producto_id}")
-        ref_productos.set(datos_actualizados["Nombre"])
+        ref_productos.set(datos_filtrados.get("Nombre", producto_existente.get("Nombre")))
 
         return jsonify({
             "codigo": 203,
             "mensaje": obtener_respuesta(203),  # Producto actualizado correctamente
             "ID": producto_id
         }), 200
-    else:
+    except Exception as e:
         return jsonify({
-            "codigo": 301,
-            "mensaje": obtener_respuesta(301)  # ISBN no encontrado
-        }), 404
-        
+            "codigo": 500,
+            "mensaje": f"Error interno al actualizar el producto: {str(e)}"
+        }), 500       
 
 # Endpoint para eliminar un producto
 def eliminar_producto(producto_id):
     datos = request.json
 
-    # Verificar autenticación del administrador
     usuario = datos.get("usuario")
     password = datos.get("password")
 
     if not usuario or not password:
         return jsonify({
             "codigo": 500,
-            "mensaje": obtener_respuesta(500)  # Usuario no reconocido
+            "mensaje": obtener_respuesta(500) # Usuario no reconocido
         }), 401
-
+        
     if not verificar_admin(usuario, password):
         return jsonify({
             "codigo": 501,
@@ -167,12 +188,11 @@ def eliminar_producto(producto_id):
             "mensaje": obtener_respuesta(304)  # ID no corresponde a una categoría válida
         }), 400
 
-    # Referencia al producto en "detalles"
     ref_detalles = db.reference(f"detalles/{producto_id}")
     producto = ref_detalles.get()
 
     if producto:
-        # Eliminar el producto de "detalles"
+        # Eliminar el producto
         ref_detalles.delete()
         ref_productos = db.reference(f"productos/{categoria}/{producto_id}")
         ref_productos.delete()
