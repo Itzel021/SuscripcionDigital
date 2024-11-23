@@ -62,11 +62,16 @@ def agregar_producto():
 
     ref_productos.child(nuevo_id).set(producto["Nombre"])
 
-    return jsonify({
+    # Enviar la notificación con el nombre del producto
+    nueva_notificacion = {
         "codigo": 202,
         "mensaje": obtener_respuesta(202),  # Producto registrado correctamente
-        "ID": nuevo_id
-    }), 201
+        "ID": nuevo_id,
+        "titulo": producto["Nombre"],
+        "categoria" : producto["Categoria"] # Incluir el nombre del producto en la notificación
+    }
+
+    return jsonify(nueva_notificacion), 201
 
 #Endpoint para actualizar un producto
 def actualizar_producto(producto_id):

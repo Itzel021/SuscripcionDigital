@@ -15,6 +15,7 @@ if ($response !== false) {
 
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -23,12 +24,53 @@ if ($response !== false) {
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
     <link rel="stylesheet" href="./estilos/index.css">
     <style>
-        .menu { margin-top: 360px; }
-        .card { width: 180px; height: 350px; }
-        .card img { width: 180px; height: 300px; object-fit: cover; }
-        .catalogo-container { max-height: 550px; overflow-y: auto; padding-right: 15px; }
+        .menu {
+            margin-top: 360px;
+        }
+
+        .card {
+            width: 180px;
+            height: 350px;
+        }
+
+        .card img {
+            width: 180px;
+            height: 300px;
+            object-fit: cover;
+        }
+
+        .catalogo-container {
+            max-height: 550px;
+            overflow-y: auto;
+            padding-right: 15px;
+        }
     </style>
 </head>
+<script>
+    const eventSource = new EventSource("http://127.0.0.1:4000/notificaciones");
+
+    eventSource.onmessage = function (event) {
+        const data = JSON.parse(event.data); // Parsear el mensaje recibido como JSON
+        const listaNotificaciones = document.getElementById("listaNotificaciones");
+        const notificacionesDiv = document.getElementById("notificaciones");
+
+        // Crear un nuevo elemento de lista con la notificación
+        const nuevaNotificacion = document.createElement("li");
+        nuevaNotificacion.textContent = `¡Tenemos un nuevo título!: ${data.titulo} búscala en la categoria: ${data.categoria}`;
+
+        // Añadir la notificación al listado
+        listaNotificaciones.appendChild(nuevaNotificacion);
+
+        // Mostrar la sección de notificaciones si está oculta
+        notificacionesDiv.style.display = "block";
+    };
+
+    eventSource.onerror = function () {
+        console.error("Error al conectarse al servidor de notificaciones.");
+    };
+
+</script>
+
 <body>
     <div class="container-fluid">
         <div class="sidebar">
@@ -47,6 +89,11 @@ if ($response !== false) {
         <div class="main-content">
             <div class="col-md-12 mx-auto">
                 <div class="catalogo-container">
+                    <div class="alert alert-info" id="notificaciones" style="display: none;">
+                        <strong>Notificaciones:</strong>
+                        <ul id="listaNotificaciones"></ul>
+                    </div>
+
                     <div class="row mt-4">
                         <?php if (!empty($productos)): ?>
                             <?php foreach ($productos as $isbn => $detalles): ?>
@@ -80,7 +127,8 @@ if ($response !== false) {
     </div>
 
     <!-- Modal Detalles -->
-    <div class="modal fade" id="modalDetalles" tabindex="-1" role="dialog" aria-labelledby="modalDetallesLabel" aria-hidden="true">
+    <div class="modal fade" id="modalDetalles" tabindex="-1" role="dialog" aria-labelledby="modalDetallesLabel"
+        aria-hidden="true">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
@@ -118,4 +166,5 @@ if ($response !== false) {
         });
     </script>
 </body>
+
 </html>

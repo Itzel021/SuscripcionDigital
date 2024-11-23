@@ -4,9 +4,9 @@ import hashlib
 from firebase_admin import credentials, db
 
 # Configuración de Firebase con tus credenciales y la URL de la base de datos
-cred = credentials.Certificate("credenciales-json/suscripcion-digital-firebase-adminsdk-vx0b1-4058fb614f.json")
+cred = credentials.Certificate("Credenciales/suscripciondigital-2ad4a-firebase-adminsdk-xm99j-a103f36e13.json")
 firebase_admin.initialize_app(cred, {
-    "databaseURL": "https://suscripcion-digital-default-rtdb.firebaseio.com/"
+    "databaseURL": "https://suscripciondigital-2ad4a-default-rtdb.firebaseio.com/"
 })
 
 # Cargar respuestas desde Firebase
