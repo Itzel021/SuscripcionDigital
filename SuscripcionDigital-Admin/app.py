@@ -1,7 +1,6 @@
-# app.py
-from flask import Flask
-from crud import agregar_producto, actualizar_producto, eliminar_producto
-from utils import obtener_respuesta
+from flask import request
+from flask import Flask, Response
+from crud import agregar_producto, actualizar_producto, eliminar_producto, obtener_producto, obtener_todos_productos, obtener_productos_categoria
 
 app = Flask(__name__)
 
@@ -16,6 +15,18 @@ def actualizar(producto_id):
 @app.route("/eliminar_producto/<string:producto_id>", methods=["DELETE"])
 def eliminar(producto_id):
     return eliminar_producto(producto_id)
+
+@app.route('/productos', methods=['GET'])
+def obtener_productos():
+    producto_id = request.args.get('id') 
+    categoria = request.args.get('categoria')  
+
+    if producto_id: 
+        return obtener_producto(producto_id)
+    elif categoria: 
+        return obtener_productos_categoria(categoria)
+    else:  
+        return obtener_todos_productos()
 
 if __name__ == "__main__":
     app.run(debug=True, port=4000)

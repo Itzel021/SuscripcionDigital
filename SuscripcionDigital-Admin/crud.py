@@ -1,3 +1,4 @@
+import requests
 from flask import jsonify, request
 from utils import obtener_respuesta, verificar_admin, generar_nuevo_id
 from firebase_admin import db
@@ -61,7 +62,28 @@ def agregar_producto():
     })
 
     ref_productos.child(nuevo_id).set(producto["Nombre"])
+    webhook_url = "http://localhost/ws/SuscripcionDigital/ClientePHP/webhook_handler"
+    webhook_data = {
+        "evento": "nuevo_producto",
+        "producto": {
+            "Nombre": producto["Nombre"],
+            "Autor": producto["Autor"],
+            "Precio": producto["Precio"],
+            "URL": producto["URL"]
+        }
+    }
+    try:
+        # Realizar la solicitud POST al webhook
+        response = requests.post(webhook_url, json=webhook_data)
 
+        # Verificar si el webhook fue exitoso
+        if response.status_code == 200:
+            print("Webhook enviado correctamente")
+        else:
+            print(f"Error al enviar el webhook: {response.status_code}")
+    except requests.exceptions.RequestException as e:
+        print(f"Error al realizar la solicitud al webhook: {str(e)}")
+    
     return jsonify({
         "codigo": 202,
         "mensaje": obtener_respuesta(202),  # Producto registrado correctamente
@@ -207,3 +229,70 @@ def eliminar_producto(producto_id):
             "codigo": 301,
             "mensaje": obtener_respuesta(301)  # ISBN no encontrado
         }), 404
+
+# Función para obtener todos los productos
+def obtener_todos_productos():
+    ref_productos = db.reference("productos")
+    productos = ref_productos.get()
+
+    if productos:
+        return jsonify({
+            "codigo": 200,
+            "mensaje": obtener_respuesta(200),  # Categoría encontrada exitosamente
+            "productos": productos
+        }), 200
+    else:
+        return jsonify({
+            "codigo": 300,
+            "mensaje": obtener_respuesta(300)  # Categoria no encontrada
+        }), 404
+
+# Función para obtener los productos de una categoría
+def obtener_productos_categoria(categoria):
+    ref_productos = db.reference(f"productos/{categoria}")
+    productos_categoria = ref_productos.get()
+
+    if productos_categoria:
+        return jsonify({
+            "codigo": 306,
+            "mensaje": obtener_respuesta(306),
+            "productos": productos_categoria
+        }), 200
+    else:
+        return jsonify({
+            "codigo": 300,
+            "mensaje": obtener_respuesta(300)
+        }), 404
+
+# Función para obtener un producto
+def obtener_producto(producto_id):
+    if producto_id.startswith("REV"):
+        categoria = "revistas"
+    elif producto_id.startswith("LIB"):
+        categoria = "libros"
+    elif producto_id.startswith("MAN"):
+        categoria = "mangas"
+    else:
+        return jsonify({
+            "codigo": 304,
+            "mensaje": obtener_respuesta(304)  # ID no corresponde a una categoría válida
+        }), 400
+
+    ref_detalles = db.reference(f"detalles/{producto_id}")
+    producto = ref_detalles.get()
+
+    if producto:
+        return jsonify({
+            "codigo": 201,
+            "mensaje": obtener_respuesta(201),  # Título encontrado exitosamente
+            "producto": producto
+        }), 200
+    else:
+        return jsonify({
+            "codigo": 301,
+            "mensaje": obtener_respuesta(301)  # ISBN no encontrado
+        }), 404
+        
+
+
+

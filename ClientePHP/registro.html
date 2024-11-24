@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Biblioteca Digital</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <link rel="stylesheet" href="./estilos/registro.css">
+</head>
+
+<body>
+    <div class="container-fluid">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="sidebar-content">
+                <div class="message">
+                    <h3>¡Bienvenido!</h3>
+                </div>
+                <div class="menu">
+                    <a href="index.php"><button class="btn btn-light">BUSCAR LIBROS</button></a>
+                    <a href="acceder.html"><button class="btn btn-light">ADQUIRIR LIBROS</button></a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main content -->
+        <div class="cont-main col-md-9 d-flex justify-content-center">
+            <div class="main-content col-md-6">
+                <h4 class="mb-2 mt-0 text-center">Suscripción</h4>
+                <form action="/ws/SuscripcionDigital/ClientePHP/suscriptores" method="post">
+                    <!-- Email -->
+                    <div class="form-group">
+                        <label for="email">Correo Electrónico</label>
+                        <input type="email" id="email" name="email" class="form-control"
+                            placeholder="usuario@correo.com" required>
+                    </div>
+                    <!-- Username -->
+                    <div class="row">
+                        <div class="col-md-6">
+                            <label for="username">Nombre de Usuario</label>
+                            <input type="text" id="username" name="username" class="form-control" placeholder="Usuario"
+                                required>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="password">Contraseña</label>
+                            <input type="password" id="password" name="password" class="form-control"
+                                placeholder="Contraseña" required maxlength="8">
+                        </div>
+                    </div>
+                    <!-- Plan -->
+                    <div class="row mt-2">
+                        <div class="col-md-6">
+                            <p>Elige tu plan:</p>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="plan" id="plan3Meses"
+                                    value="3-meses">
+                                <label class="form-check-label" for="plan3Meses">3 Meses</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="plan" id="plan6Meses"
+                                    value="6-meses">
+                                <label class="form-check-label" for="plan6Meses">6 Meses</label>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <p class="mt-2">Método de pago:</p>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="pago" id="tarjetaCredito"
+                                    value="Tarjeta-Credito">
+                                <label class="form-check-label" for="tarjetaCredito">Tarjeta de Crédito</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="pago" id="tarjetaDebito"
+                                    value="Tarjeta-Debito">
+                                <label class="form-check-label" for="tarjetaDebito">Tarjeta de Débito</label>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Número de cuenta -->
+                    <div class="form-group mt-3">
+                        <label for="numCuenta">Ingresa tu número de cuenta:</label>
+                        <input type="text" id="numCuenta" name="numCuenta" class="form-control"
+                            placeholder="XXX-XXX-XX-XX" required maxlength="10">
+                    </div>
+                    <div id="message" class="alert d-none" role="alert"></div>
+                    <div class="d-flex justify-content-center mt-2">
+                        <button type="submit" class="btn btn-success submit-btn">SUSCRIBIRSE</button>
+                    </div>
+                    <p class="mt-2 mb-0">¿Ya estas suscrito?<a href="login.html"> Inicia sesión</a></p>
+                </form>
+            </div>
+        </div>
+    </div>
+</body>
+<script>
+    const form = document.querySelector('form');
+const messageDiv = document.getElementById('message');
+
+form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+
+    const formData = new FormData(form); 
+    const data = Object.fromEntries(formData.entries()); // Convierte FormData a un objeto
+
+    try {
+        const response = await fetch(form.action, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json', // Indica que el contenido es JSON
+            },
+            body: JSON.stringify(data), // Convierte el objeto a una cadena JSON
+        });
+
+        const result = await response.json();
+
+        messageDiv.classList.remove('d-none', 'alert-success', 'alert-danger');
+        if (response.ok) {
+            messageDiv.classList.add('alert-success');
+            messageDiv.textContent = result.message;
+        } else {
+            messageDiv.classList.add('alert-danger');
+            messageDiv.textContent = result.error;
+        }
+    } catch (error) {
+        messageDiv.classList.remove('d-none', 'alert-success');
+        messageDiv.classList.add('alert-danger');
+        messageDiv.textContent = 'Error al procesar la solicitud. Inténtalo de nuevo.';
+    }
+});
+
+</script>
+
+</html>
