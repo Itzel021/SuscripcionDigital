@@ -14,7 +14,7 @@ $firebase = new MyFirebase("suscripciondigital-2ad4a");
 $app->setBasePath('/ws/SuscripcionDigital/ClientePHP');
 
 //Endpoint para registrar los suscriptores
-$app->post('/suscriptores', function (Request $request, Response $response) use ($firebase) {
+$app->post('/usuarios', function (Request $request, Response $response) use ($firebase) {
     $params = json_decode($request->getBody(), true);
 
 
@@ -108,7 +108,7 @@ $app->get('/productos', function (Request $request, Response $response) use ($fi
 });
 
 //Endpoint para buscar titulos (usuario no suscrito)
-$app->get('/titulos', function (Request $request, Response $response) use ($firebase) {
+$app->get('/productos/titulos', function (Request $request, Response $response) use ($firebase) {
     // Obtener los parámetros de consulta
     $queryParams = $request->getQueryParams();
     $titulo = trim($queryParams['titulo'] ?? '');
@@ -152,7 +152,7 @@ $app->get('/titulos', function (Request $request, Response $response) use ($fire
 });
 
 //Endpoint para buscar los detalles de un titulo (Usuario suscrito)
-$app->get('/detalles', function ($request, $response, $args) use ($firebase) {
+$app->get('/productos/detalles', function ($request, $response, $args) use ($firebase) {
     $params = $request->getQueryParams(); // Obtener parámetros de consulta
 
     $titulo = isset($params['titulo']) ? trim($params['titulo']) : '';
@@ -209,7 +209,7 @@ $app->get('/detalles', function ($request, $response, $args) use ($firebase) {
 
 
 //Endpoint para escuchar el webhook
-$app->post('/webhooks/productos/add', function (Request $request, Response $response) use ($firebase) {
+$app->post('/webhooks/productos', function (Request $request, Response $response) use ($firebase) {
     // Decodificar el cuerpo de la solicitud
     $data = json_decode($request->getBody(), true);
 

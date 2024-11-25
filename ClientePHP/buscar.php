@@ -140,7 +140,7 @@ if (!isset($_SESSION['username'])) {
             messageDiv.textContent = 'Buscando...';
             messageDiv.classList.remove('d-none');
 
-            fetch(`/ws/SuscripcionDigital/ClientePHP/detalles?categoria=${encodeURIComponent(categoria)}&titulo=${encodeURIComponent(titulo)}`)
+            fetch(`/ws/SuscripcionDigital/ClientePHP/productos/detalles?categoria=${encodeURIComponent(categoria)}&titulo=${encodeURIComponent(titulo)}`)
                 .then(response => {
                     if (!response.ok) {
                         throw new Error('Error en la búsqueda');

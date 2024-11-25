@@ -87,7 +87,7 @@
             messageDiv.textContent = 'Buscando...';
             messageDiv.classList.remove('d-none');
 
-            fetch('/ws/SuscripcionDigital/ClientePHP/titulos?titulo=' + encodeURIComponent(titulo) + '&categoria=' + encodeURIComponent(categoria))
+            fetch('/ws/SuscripcionDigital/ClientePHP/productos/titulos?titulo=' + encodeURIComponent(titulo) + '&categoria=' + encodeURIComponent(categoria))
                 .then(response => {
                     if (!response.ok) {
                         throw new Error('Error en la búsqueda');

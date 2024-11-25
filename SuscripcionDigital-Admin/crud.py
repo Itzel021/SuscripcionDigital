@@ -62,7 +62,7 @@ def agregar_producto():
     })
 
     ref_productos.child(nuevo_id).set(producto["Nombre"])
-    webhook_url = "http://localhost/ws/SuscripcionDigital/ClientePHP/webhooks/productos/add"
+    webhook_url = "http://localhost/ws/SuscripcionDigital/ClientePHP/webhooks/productos"
     webhook_data = {
         "evento": "nuevo_producto",
         "producto": {
