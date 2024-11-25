@@ -69,7 +69,7 @@ if (!isset($_SESSION['username'])) {
         <div class="container d-flex main-content">
             <div class="col-md-6 mx-auto">
                 <h1 class="text-center">Búsqueda de Libros</h1>
-                <form action="./Backend/buscadorSuscrito.php" method="post">
+                <form id="buscadorForm">
                     <label for="categoria" class="me-2"><i class="fas fa-list"></i> Selecciona una Categoría:</label>
                     <div class="form-group">
                         <select id="categoria" name="categoria" class="form-control">
@@ -79,50 +79,20 @@ if (!isset($_SESSION['username'])) {
                             <option value="mangas">Mangas</option>
                         </select>
                     </div>
-                    <!-- Buscar por Titulo -->
-                    <label for="isbn" class="me-2"><i class="fas fa-search"></i> Titulo:</label>
+                    <label for="titulo" class="me-2"><i class="fas fa-search"></i> Titulo:</label>
                     <div class="form-group d-flex align-items-center">
                         <input type="text" id="titulo" name="titulo" placeholder="escribe el titulo..."
                             class="form-control me-2" required>
                         <button class="btn btn-success" type="submit">BUSCAR</button>
                     </div>
                 </form>
-                <div class="alert alert-info mx-auto">
-                    <strong>Resultado de búsqueda</strong>
-                    <p>
-                    <?php
-                        echo isset($_SESSION['mensaje']) ? $_SESSION['mensaje'] : '';
-                        unset($_SESSION['mensaje']);
-                        ?>
-                    </p>
-                </div>
+                <div id="message" class="alert d-none" role="alert"></div>
             </div>
             <div class="col-md-6 mx-auto text-center">
-                <div class="card ml-5">
-                    <!-- Mostrar imagen predeterminada o portada -->
-                    <img src="./img/<?php echo isset($_SESSION['producto'][0]['Portada']) ? $_SESSION['producto'][0]['Portada'] : 'default'; ?>.jpg" 
-                         class="card-img-top" alt="Portada">
-                    <div class="mt-2">
-                        <!-- Mostrar botones solo si hay un producto disponible -->
-                        <?php if (isset($_SESSION['producto'][0])): ?>
-                            <div class="card-body row">
-                                <button class="btn btn-warning" data-toggle="modal" data-target="#modalDetalles"
-                                    data-titulo="<?php echo htmlspecialchars($_SESSION['producto'][0]['Titulo'] ?? ''); ?>"
-                                    data-isbn="<?php echo htmlspecialchars($_SESSION['producto'][0]['ISBN'] ?? ''); ?>"
-                                    data-autor="<?php echo htmlspecialchars($_SESSION['detalles'][$_SESSION['producto'][0]['ISBN']]['Autor'] ?? ''); ?>"
-                                    data-editorial="<?php echo htmlspecialchars($_SESSION['detalles'][$_SESSION['producto'][0]['ISBN']]['Editorial'] ?? ''); ?>"
-                                    data-fecha="<?php echo htmlspecialchars($_SESSION['detalles'][$_SESSION['producto'][0]['ISBN']]['Fecha'] ?? ''); ?>"
-                                    data-precio="<?php echo htmlspecialchars($_SESSION['detalles'][$_SESSION['producto'][0]['ISBN']]['Precio'] ?? ''); ?>">
-                                    Detalles
-                                </button>
-                                <a href="contenido.php?url=<?php echo urlencode('./pdf/' . $_SESSION['detalles'][$_SESSION['producto'][0]['ISBN']]['URL'] . '.pdf'); ?>" 
-                                   class="btn btn-primary ml-2">
-                                    Leer
-                                </a>
-                            </div>
-                        <?php endif; ?>
-                    </div>
+                <div id="resultados" class="mt-4">
+                    <!-- Los resultados se cargarán aquí -->
                 </div>
+
             </div>
         </div>
     </div>
@@ -159,6 +129,70 @@ if (!isset($_SESSION['username'])) {
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 
     <script>
+        document.getElementById('buscadorForm').addEventListener('submit', function (e) {
+            e.preventDefault();
+            const messageDiv = document.getElementById('message');
+            const categoria = document.getElementById('categoria').value.trim();
+            const titulo = document.getElementById('titulo').value.trim();
+
+            // Mostrar mensaje de carga
+            messageDiv.className = 'alert alert-info';
+            messageDiv.textContent = 'Buscando...';
+            messageDiv.classList.remove('d-none');
+
+            fetch(`/ws/SuscripcionDigital/ClientePHP/detalles?categoria=${encodeURIComponent(categoria)}&titulo=${encodeURIComponent(titulo)}`)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Error en la búsqueda');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    const messageDiv = document.getElementById('message');
+                    const resultadosDiv = document.getElementById('resultados');
+                    resultadosDiv.innerHTML = '';
+
+                    if (data.producto && data.producto.length > 0) {
+                        const producto = data.producto[0];
+                        const detalles = data.detalles[producto.ISBN];
+
+                        resultadosDiv.innerHTML = `
+                        <div class="card ml-3">
+                            <img src="./img/${producto.Portada || 'default'}.jpg" class="card-img-top" alt="Portada">
+                            <div class="card-body">
+                                <button 
+                                    class="btn btn-warning ml-2"
+                                    data-toggle="modal"
+                                    data-target="#modalDetalles"
+                                    data-titulo="${producto.Titulo}"
+                                    data-isbn="${producto.ISBN}"
+                                    data-autor="${detalles.Autor || 'Desconocido'}"
+                                    data-editorial="${detalles.Editorial || 'Desconocida'}"
+                                    data-fecha="${detalles.Fecha || 'Desconocida'}"
+                                    data-precio="${detalles.Precio || '0.00'}">
+                                    Detalles
+                                </button>
+                                <a href="contenido.php?url=${encodeURIComponent('./pdf/' + detalles.URL + '.pdf')}" class="btn btn-primary">Leer</a>
+                            </div>
+                        </div>
+                    `;
+
+                        messageDiv.classList.add('alert-success');
+                        messageDiv.textContent = data.message;  // Mostrar mensaje de éxito
+                    } else {
+                        messageDiv.classList.add('alert-danger');
+                        messageDiv.textContent = data.error;  // Mensaje de error
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    const messageDiv = document.getElementById('message');
+                    messageDiv.classList.remove('d-none', 'alert-success');
+                    messageDiv.classList.add('alert-danger');
+                    messageDiv.textContent = '305 : Título no disponible';
+                });
+        });
+
         // Script para pasar los datos al modal
         $('#modalDetalles').on('show.bs.modal', function (event) {
             var button = $(event.relatedTarget); // Botón que abre el modal
@@ -178,6 +212,7 @@ if (!isset($_SESSION['username'])) {
             modal.find('#modalFecha').text(fecha);
             modal.find('#modalPrecio').text(precio);
         });
+
     </script>
 
 </body>

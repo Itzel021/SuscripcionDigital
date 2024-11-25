@@ -5,7 +5,7 @@ require_once '../vendor/autoload.php';
 require_once __DIR__ . '/../Clases/MyFirebase.php';
 use \Clases\MyFirebase\MyFirebase;
 
-$firebase = new MyFirebase("suscripcion-digital");
+$firebase = new MyFirebase("suscripciondigital-2ad4a");
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $username = $_POST['username'];

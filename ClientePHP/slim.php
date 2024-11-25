@@ -11,10 +11,9 @@ use PHPMailer\PHPMailer\Exception;
 
 $app = AppFactory::create();
 $firebase = new MyFirebase("suscripciondigital-2ad4a");
-//$usuarios = $firebase->getReference("usuarios");
 $app->setBasePath('/ws/SuscripcionDigital/ClientePHP');
 
-// Ruta para manejar las suscripciones
+//Endpoint para registrar los suscriptores
 $app->post('/suscriptores', function (Request $request, Response $response) use ($firebase) {
     $params = json_decode($request->getBody(), true);
 
@@ -76,7 +75,7 @@ $app->post('/suscriptores', function (Request $request, Response $response) use 
     }
 });
 
-// Ruta para obtener todos los productos
+//Endpoint para ver el catálogo de todos los productos
 $app->get('/productos', function (Request $request, Response $response) use ($firebase) {
     try {
         // Obtener todos los productos
@@ -108,7 +107,7 @@ $app->get('/productos', function (Request $request, Response $response) use ($fi
     }
 });
 
-// Ruta para buscar titulos
+//Endpoint para buscar titulos (usuario no suscrito)
 $app->get('/titulos', function (Request $request, Response $response) use ($firebase) {
     // Obtener los parámetros de consulta
     $queryParams = $request->getQueryParams();
@@ -149,6 +148,62 @@ $app->get('/titulos', function (Request $request, Response $response) use ($fire
         // Manejo de errores
         $response->getBody()->write(json_encode(['error' => 'Error al buscar el producto: ' . $e->getMessage()]));
         return $response->withHeader('Content-Type', 'application/json')->withStatus(500);
+    }
+});
+
+//Endpoint para buscar los detalles de un titulo (Usuario suscrito)
+$app->get('/detalles', function ($request, $response, $args) use ($firebase) {
+    $params = $request->getQueryParams(); // Obtener parámetros de consulta
+
+    $titulo = isset($params['titulo']) ? trim($params['titulo']) : '';
+    $categoria = isset($params['categoria']) ? trim($params['categoria']) : '';
+
+    // Validar la entrada
+    if (empty($categoria)) {
+        $respuesta = $firebase->getRespuesta(300); // Categoría no encontrada
+        $response->getBody()->write(json_encode(['error' => '300 : ' . $respuesta]));
+        return $response->withHeader('Content-Type', 'application/json')->withStatus(400);
+    }
+
+    try {
+        $result = $firebase->getProducto($categoria, $titulo);
+        if ($result) {
+            // Producto encontrado
+            $respuesta = $firebase->getRespuesta(201);
+            $isbn = $result["ISBN"];
+            $titulo = $result["Titulo"];
+
+            $productos = [];
+            $detallesPorISBN = [];
+            $detalles = $firebase->getDetalles($isbn);
+
+            if ($detalles) {
+                $detallesPorISBN[$isbn] = $detalles;
+            }
+
+            $productos[] = [
+                'ISBN' => $isbn,
+                'Titulo' => $titulo,
+                'Portada' => $detalles['Portada']
+            ];
+
+            // Respuesta exitosa con detalles del producto
+            $response->getBody()->write(json_encode([
+                'message' => '201 :' . $respuesta,
+                'producto' => $productos,
+                'detalles' => $detallesPorISBN
+            ]));
+            return $response->withStatus(200);
+        } else {
+            $respuesta = $firebase->getRespuesta(305); // Título no encontrado
+            $response->getBody()->write(json_encode(['message' => '305 :' . $respuesta]));
+            return $response->withStatus(404); 
+        }
+    } catch (Exception $e) {
+        // Error genérico
+        $respuesta = $firebase->getRespuesta(999);
+        $response->getBody()->write(json_encode(['message' => $respuesta . $e->getMessage()]));
+        return $response->withStatus(500);
     }
 });
 
