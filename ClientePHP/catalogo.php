@@ -46,30 +46,6 @@ if ($response !== false) {
         }
     </style>
 </head>
-<script>
-    const eventSource = new EventSource("http://127.0.0.1:4000/notificaciones");
-
-    eventSource.onmessage = function (event) {
-        const data = JSON.parse(event.data); // Parsear el mensaje recibido como JSON
-        const listaNotificaciones = document.getElementById("listaNotificaciones");
-        const notificacionesDiv = document.getElementById("notificaciones");
-
-        // Crear un nuevo elemento de lista con la notificación
-        const nuevaNotificacion = document.createElement("li");
-        nuevaNotificacion.textContent = `¡Tenemos un nuevo título!: ${data.titulo} búscala en la categoria: ${data.categoria}`;
-
-        // Añadir la notificación al listado
-        listaNotificaciones.appendChild(nuevaNotificacion);
-
-        // Mostrar la sección de notificaciones si está oculta
-        notificacionesDiv.style.display = "block";
-    };
-
-    eventSource.onerror = function () {
-        console.error("Error al conectarse al servidor de notificaciones.");
-    };
-
-</script>
 
 <body>
     <div class="container-fluid">

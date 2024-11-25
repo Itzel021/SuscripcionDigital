@@ -78,14 +78,16 @@
         function buscarProducto() {
             const titulo = document.getElementById('titulo').value;
             const categoria = document.getElementById('categoria').value;
+            const messageDiv = document.getElementById('message');
+            const cardImage = document.getElementById('cardImage');
+            const cardTitle = document.getElementById('cardTitle');
 
-            fetch('/ws/SuscripcionDigital/ClientePHP/titulos', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ titulo, categoria })
-            })
+            // Mostrar mensaje de carga
+            messageDiv.className = 'alert alert-info';
+            messageDiv.textContent = 'Buscando...';
+            messageDiv.classList.remove('d-none');
+
+            fetch('/ws/SuscripcionDigital/ClientePHP/titulos?titulo=' + encodeURIComponent(titulo) + '&categoria=' + encodeURIComponent(categoria))
                 .then(response => {
                     if (!response.ok) {
                         throw new Error('Error en la búsqueda');
@@ -93,23 +95,23 @@
                     return response.json();
                 })
                 .then(data => {
+                    // Actualizar el mensaje y la imagen de la portada
                     const messageDiv = document.getElementById('message');
-                    const cardImage = document.querySelector('.card img');
-                    const cardTitle = document.querySelector('.card-title');
+                    const cardImage = document.getElementById('cardImage');
+                    const cardTitle = document.getElementById('cardTitle');
 
-                    // Limpiar el mensaje anterior
                     messageDiv.classList.remove('d-none', 'alert-success', 'alert-danger');
-                    cardImage.src = './img/default.jpg'; // Restaurar la imagen por defecto
-                    cardTitle.innerHTML = ''; // Limpiar el título anterior
+                    cardImage.src = './img/default.jpg';  // Restaurar imagen predeterminada
+                    cardTitle.textContent = '';  // Limpiar título anterior
 
                     if (data.data) {
-                        cardImage.src = './img/' + data.data.Portada + '.jpg'; // Ajusta según tu estructura
-                        cardTitle.innerHTML = `${data.data.ISBN} : ${data.data.Titulo}`;
+                        cardImage.src = './img/' + data.data.Portada + '.jpg';  // Asignar la portada
+                        cardTitle.textContent = `${data.data.ISBN} : ${data.data.Titulo}`;  // Asignar el título
                         messageDiv.classList.add('alert-success');
-                        messageDiv.textContent = data.message; // Mensaje de éxito de la API
+                        messageDiv.textContent = data.message;  // Mostrar mensaje de éxito
                     } else {
                         messageDiv.classList.add('alert-danger');
-                        messageDiv.textContent = data.error || 'Titulo no disponible'; // Mensaje de error de la API
+                        messageDiv.textContent = data.error || '305 : Título no disponible';  // Mensaje de error
                     }
                 })
                 .catch(error => {
@@ -117,7 +119,7 @@
                     const messageDiv = document.getElementById('message');
                     messageDiv.classList.remove('d-none', 'alert-success');
                     messageDiv.classList.add('alert-danger');
-                    messageDiv.textContent = 'Título no disponible';
+                    messageDiv.textContent = '305 : Título no disponible';
                 });
         }
     </script>

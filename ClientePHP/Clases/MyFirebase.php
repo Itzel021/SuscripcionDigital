@@ -4,7 +4,6 @@ namespace Clases\MyFirebase;
 class MyFirebase
 {
     private $UrlFirebase;
-
     public function __construct($project)
     {
         $this->UrlFirebase = "https://{$project}-default-rtdb.firebaseio.com/";
@@ -29,6 +28,27 @@ class MyFirebase
 
         return json_decode($response, true); // Decodificar la respuesta JSON
     }
+    //Funcion para obtener los emails
+    public function getReference($path, $filterEmails = false)
+{
+    // Construir la URL completa a la ruta solicitada
+    $url = $this->UrlFirebase . $path . '.json';
+    $response = $this->runCurl($url, 'GET');
+
+    if ($filterEmails && is_array($response)) {
+        // Filtrar y devolver solo los correos electrónicos
+        $emails = [];
+        foreach ($response as $key => $item) {
+            if (isset($item['email'])) {
+                $emails[] = $item['email'];
+            }
+        }
+        return $emails;
+    }
+
+    return $response; // Retorna la respuesta completa si no se filtran correos
+}
+
     //Función para obtener todos los usuarios
     public function getAllUsers()
     {
