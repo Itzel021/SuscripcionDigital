@@ -12,7 +12,6 @@ if ($response !== false) {
     $productos = json_decode($response, true);
 }
 ?>
-
 <!DOCTYPE html>
 <html lang="es">
 
@@ -46,6 +45,35 @@ if ($response !== false) {
         }
     </style>
 </head>
+<script>
+
+    // Crear una conexión SSE
+    const eventSource = new EventSource('http://localhost:4000/notificaciones');
+
+    // Manejar los eventos enviados por el servidor
+    eventSource.onmessage = function (event) {
+        if (event.data === 'heartbeat') {
+            console.log("Conexión activa");
+        } else {
+            const mensaje = JSON.parse(event.data); // Parsear el mensaje JSON
+            const listaNotificaciones = document.getElementById("listaNotificaciones");
+            const notificacionesDiv = document.getElementById("notificaciones");
+
+            // Crear un nuevo elemento de lista con la notificación
+            const nuevaNotificacion = document.createElement("li");
+            nuevaNotificacion.textContent = `¡Tenemos un nuevo título! ${mensaje.titulo} búscala en la categoría ${mensaje.categoria}`;
+            listaNotificaciones.appendChild(nuevaNotificacion);
+            // Mostrar el div de notificaciones
+            notificacionesDiv.style.display = "block";
+        }
+    };
+
+    // Manejar errores de SSE
+    eventSource.onerror = function (error) {
+        console.error('Error al recibir SSE:', error);
+    };
+
+</script>
 
 <body>
     <div class="container-fluid">
@@ -65,9 +93,11 @@ if ($response !== false) {
         <div class="main-content">
             <div class="col-md-12 mx-auto">
                 <div class="catalogo-container">
-                    <div class="alert alert-info" id="notificaciones" style="display: none;">
+
+                    <div class="alert alert-warning" id="notificaciones" style="display: none;">
                         <strong>Notificaciones:</strong>
                         <ul id="listaNotificaciones"></ul>
+                        <button class="btn btn-secondary" id="cerrarNotificaciones">OK</button>
                     </div>
 
                     <div class="row mt-4">
@@ -131,6 +161,13 @@ if ($response !== false) {
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
     <script>
+        // Botón para cerrar las notificaciones
+        document.getElementById("cerrarNotificaciones").addEventListener("click", function () {
+            // Limpiar las notificaciones
+            document.getElementById("listaNotificaciones").innerHTML = "";
+            // Ocultar el div de notificaciones
+            document.getElementById("notificaciones").style.display = "none";
+        });
         $('#modalDetalles').on('show.bs.modal', function (event) {
             var button = $(event.relatedTarget);
             $('#modalTitulo').text(button.data('titulo'));

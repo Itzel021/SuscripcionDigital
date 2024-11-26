@@ -1,44 +1,45 @@
 import requests
-from flask import jsonify, request
+from flask import jsonify, request, Response
 from utils import obtener_respuesta, verificar_admin, generar_nuevo_id
 from firebase_admin import db
+
+# Crear notificación para clientes
+def crear_notificacion(nueva_notificacion):
+    return nueva_notificacion
 
 # Endpoint para agregar un producto
 def agregar_producto():
     datos = request.json
-
-    # Verificar autenticación del administrador
     usuario = datos.get("usuario")
     password = datos.get("password")
 
     if not usuario or not password:
         return jsonify({
             "codigo": 500,
-            "mensaje": obtener_respuesta(500)  # Usuario no reconocido
-        }), 401
+            "mensaje": obtener_respuesta(500)
+        }), 401, None
 
     if not verificar_admin(usuario, password):
         return jsonify({
             "codigo": 501,
-            "mensaje": obtener_respuesta(501)  # Contraseña no reconocida
-        }), 403
+            "mensaje": obtener_respuesta(501)
+        }), 403, None
 
     producto = datos.get("producto", {})
     if not all(k in producto for k in ("Autor", "Editorial", "Fecha", "Nombre", "Precio", "Categoria", "URL", "Portada")):
         return jsonify({
             "codigo": 303,
-            "mensaje": obtener_respuesta(303)  # JSON mal formado
-        }), 400
+            "mensaje": obtener_respuesta(303)
+        }), 400, None
 
-    # Genera el ID según la categoría
-    categoria = producto.get("Categoria", "").lower()  # Asegura que esté en minúsculas
+    categoria = producto.get("Categoria", "").lower()
     nuevo_id = generar_nuevo_id(categoria)
 
     if not nuevo_id:
         return jsonify({
             "codigo": 300,
-            "mensaje": obtener_respuesta(300)  # Categoría no válida
-        }), 400
+            "mensaje": obtener_respuesta(300)
+        }), 400, None
 
     ref_detalles = db.reference("detalles")
     ref_productos = db.reference(f"productos/{categoria}s")
@@ -46,8 +47,8 @@ def agregar_producto():
     if ref_detalles.child(nuevo_id).get():
         return jsonify({
             "codigo": 302,
-            "mensaje": obtener_respuesta(302)  # Producto ya existe
-        }), 409
+            "mensaje": obtener_respuesta(302)
+        }), 409, None
 
     # Inserta el producto
     ref_detalles.child(nuevo_id).set({
@@ -62,6 +63,16 @@ def agregar_producto():
     })
 
     ref_productos.child(nuevo_id).set(producto["Nombre"])
+
+    # Crear notificación
+    nueva_notificacion = {
+        "codigo": 202,
+        "mensaje": obtener_respuesta(202),
+        "titulo": producto["Nombre"],
+        "categoria": producto["Categoria"]
+    }
+
+    # Realizar la solicitud POST al webhook
     webhook_url = "http://localhost/ws/SuscripcionDigital/ClientePHP/webhooks/productos"
     webhook_data = {
         "evento": "nuevo_producto",
@@ -72,23 +83,21 @@ def agregar_producto():
             "Categoria": producto["Categoria"]
         }
     }
-    try:
-        # Realizar la solicitud POST al webhook
-        response = requests.post(webhook_url, json=webhook_data)
 
-        # Verificar si el webhook fue exitoso
+    try:
+        response = requests.post(webhook_url, json=webhook_data)
         if response.status_code == 200:
             print("Webhook enviado correctamente")
         else:
             print(f"Error al enviar el webhook: {response.status_code}")
     except requests.exceptions.RequestException as e:
         print(f"Error al realizar la solicitud al webhook: {str(e)}")
-    
+
     return jsonify({
         "codigo": 202,
-        "mensaje": obtener_respuesta(202),  # Producto registrado correctamente
+        "mensaje": obtener_respuesta(202),
         "ID": nuevo_id
-    }), 201
+    }), 201, nueva_notificacion
 
 #Endpoint para actualizar un producto
 def actualizar_producto(producto_id):
