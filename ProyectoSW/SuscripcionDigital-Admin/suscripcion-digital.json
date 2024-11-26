@@ -1,0 +1,138 @@
+{
+  "detalles": {
+    "LIB001": {
+      "Autor": "Rainbow Rowell",
+      "Descuento": 5,
+      "Editorial": "St. Martin's Press",
+      "Fecha": 2013,
+      "Nombre": "Fangirl",
+      "Portada": "fangirl",
+      "Precio": 16.99,
+      "URL": "ruta"
+    },
+    "LIB002": {
+      "Autor": "Kiera Cass",
+      "Descuento": 10,
+      "Editorial": "HarperTeen",
+      "Fecha": 2012,
+      "Nombre": "La Seleccion",
+      "Portada": "seleccion",
+      "Precio": 14.99,
+      "URL": "ruta"
+    },
+    "LIB003": {
+      "Autor": "Gabriel Garcia Marquez",
+      "Descuento": 8,
+      "Editorial": "Editorial Oveja Negra",
+      "Fecha": 1985,
+      "Nombre": "El amor en los tiempos del colera",
+      "Portada": "amor_colera",
+      "Precio": 19.99,
+      "URL": "ruta"
+    },
+    "MAN001": {
+      "Autor": "Natsu Hyuuga",
+      "Descuento": 3,
+      "Editorial": "Square Enix",
+      "Fecha": 2023,
+      "Nombre": "Diario de una Boticaria",
+      "Portada": "boticaria",
+      "Precio": 9.99,
+      "URL": "ruta"
+    },
+    "MAN002": {
+      "Autor": "Tatsuya Endo",
+      "Descuento": 5,
+      "Editorial": "Shueisha",
+      "Fecha": 2023,
+      "Nombre": "Spy x Family",
+      "Portada": "spyfamily",
+      "Precio": 12.99,
+      "URL": "ruta"
+    },
+    "MAN003": {
+      "Autor": "Hajime Isayama",
+      "Descuento": 2.99,
+      "Editorial": "Kodansha",
+      "Fecha": 2022,
+      "Nombre": "Shingeki no Kyojin",
+      "Portada": "ataque_titanes",
+      "Precio": 14.99,
+      "URL": "ruta"
+    },
+    "REV001": {
+      "Autor": "María López",
+      "Descuento": 15,
+      "Editorial": "Editorial Ágora",
+      "Fecha": 2024,
+      "Nombre": "Your Fashion Zine",
+      "Portada": "your_fashion_zine",
+      "Precio": 49.99,
+      "URL": "ruta"
+    },
+    "REV002": {
+      "Autor": "Juan Pérez",
+      "Descuento": 5,
+      "Editorial": "Editorial Horizonte",
+      "Fecha": 2024,
+      "Nombre": "Turismo Moderna",
+      "Portada": "turismo_moderna_verde",
+      "Precio": 35.5,
+      "URL": "ruta"
+    },
+    "REV003": {
+      "Autor": "Laura Méndez",
+      "Descuento": 10,
+      "Editorial": "Estilo y Espacios",
+      "Fecha": 2023,
+      "Nombre": "Decoración Hogar Moderna",
+      "Portada": "decoración_hogar_moderna",
+      "Precio": 40,
+      "URL": "ruta"
+    }
+  },
+  "productos": {
+    "libros": {
+      "LIB001": "Fangirl",
+      "LIB002": "La Seleccion",
+      "LIB003": "El amor en los tiempos del colera"
+    },
+    "mangas": {
+      "MAN001": "Diario de una Boticaria",
+      "MAN002": "Spy x Family",
+      "MAN003": "Shingeki no Kyojin"
+    },
+    "revistas": {
+      "REV001": "Your Fashion Zine",
+      "REV002": "Turismo Moderna",
+      "REV003": "Decoración Hogar Moderna"
+    }
+  },
+  "respuestas": {
+    "200": "Categoria encontrada exitosamente",
+    "201": "Título encontrado exitosamente.",
+    "202": "Producto registrado correctamente.",
+    "203": "Producto actualizado correctamente.",
+    "204": "Producto borrado correctamente.",
+    "300": "Categoria no encontrada.",
+    "301": "ISBN no encontrado.",
+    "302": "El producto ya existe.",
+    "303": "El JSON está mal formado.",
+    "304": "El ISBN del producto no existe.",
+    "305": "El Título no esta disponible.",
+    "500": "Usuario no reconocido.",
+    "501": "Password no reconcido.",
+    "999": "Error no identificado"
+  },
+  "usuarios": {
+    "-OBbwZsboLdgbZ_-eSd0": {
+      "email": "maold47@gmail.com",
+      "numCuenta": "1234567890",
+      "pago": "Tarjeta-Credito",
+      "password": "$2y$10$BMBi.HZEU7RDDfbWb5CZ1ekLf0BadIX1TSWYnvNIuINjo3tWzjUMq",
+      "plan": "6-meses",
+      "username": "Itzel Daniela"
+    },
+    "admin": "de88e3e4ab202d87754078cbb2df6063"
+  }
+}
