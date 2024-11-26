@@ -18,7 +18,7 @@ def agregar():
         notificar_clientes(notificacion)  # Notificar a los clientes
     return resultado, status_code
 
-@app.route("/productos", methods=["GET"])
+@app.route("/notificaciones", methods=["GET"])
 def notificaciones():
     def generar():
         while True:

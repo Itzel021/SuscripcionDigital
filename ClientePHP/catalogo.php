@@ -94,10 +94,10 @@ if ($response !== false) {
             <div class="col-md-12 mx-auto">
                 <div class="catalogo-container">
 
-                    <div class="alert alert-warning" id="notificaciones" style="display: none;">
+                    <div class="alert alert-info" id="notificaciones" style="display: none;">
                         <strong>Notificaciones:</strong>
                         <ul id="listaNotificaciones"></ul>
-                        <button class="btn btn-secondary" id="cerrarNotificaciones">OK</button>
+                        <button class="btn btn-success" id="cerrarNotificaciones">OK</button>
                     </div>
 
                     <div class="row mt-4">
